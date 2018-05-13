@@ -1,8 +1,6 @@
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.*;
@@ -14,7 +12,7 @@ public class StreamAPISandboxTest {
     private Person bob = new Person("Bob", 42, emptyList());
     private Person charline = new Person("Charline", 33, Arrays.asList(Country.SPAIN, Country.FRANCE, Country.ITALY));
     private Person danny = new Person("Danny", 19, singletonList(Country.AUSTRALIA));
-    private Person elena = new Person("Elena", 22, Arrays.asList(Country.SPAIN, Country.ITALY, Country.ENGLAND, Country.GERMANY));
+    private Person elena = new Person("Elena", 22, Arrays.asList(Country.SPAIN, Country.ITALY, Country.ENGLAND, Country.GERMANY, Country.FRANCE));
     private Person franck = new Person("Franck", 38, Arrays.asList(Country.FRANCE, Country.CUBA));
     private Person gina = new Person("Gina", 54, Arrays.asList(Country.FRANCE, Country.ENGLAND, Country.ITALY, Country.SPAIN, Country.AUSTRALIA, Country.COSTA_RICA, Country.PERU, Country.CUBA, Country.GERMANY, Country.BALI, Country.CANADA, Country.EGYPT, Country.RUSSIA));
     private Person hans = new Person("Hans", 17, emptyList());
@@ -31,7 +29,7 @@ public class StreamAPISandboxTest {
      */
     
     @Test
-    public void filter_a_collection_without_stream_api() {
+    public void _1_1_filter_a_collection_without_stream_api() {
         // act
         List<Person> cubaVisitors = new ArrayList<>();
         for (Person person: people) {
@@ -46,9 +44,11 @@ public class StreamAPISandboxTest {
     }
 
     @Test
-    public void filter_a_collection() {
+    public void _1_2_filter_a_collection() {
         // act
-        List<Person> cubaVisitors = people.stream().filter(person -> person.hasVisited(Country.CUBA)).collect(Collectors.toList());
+        List<Person> cubaVisitors = people.stream()
+                .filter(person -> person.hasVisited(Country.CUBA))
+                .collect(Collectors.toList());
 
         // assert
         List<Person> expectedCubaVisitors = Arrays.asList(franck, gina);
@@ -56,13 +56,57 @@ public class StreamAPISandboxTest {
     }
 
 
-
     /**
-     * EXAMPLE 2: Find the sum of all visited countries by people over 33
+     * EXAMPLE 2: Check that nobody visited Antartica
      */
 
     @Test
-    public void sum_of_all_visited_countries_without_stream_api() {
+    public void _2_1_check_that_nobody_visited_antarctica_without_stream_api_with_for_loop() {
+        // act
+        boolean noOneVisitedAntarctica = true;
+        for (Person person: people) {
+            if (person.hasVisited(Country.ANTARCTICA)) {
+                noOneVisitedAntarctica = false;
+            }
+        }
+
+        // assert
+        assertThat(noOneVisitedAntarctica).isTrue();
+    }
+
+    @Test
+    public void _2_2_check_that_nobody_visited_antarctica_without_stream_api_with_while() {
+        // act
+        boolean noOneVisitedAntarctica = true;
+        Iterator<Person> peopleIterator = people.iterator();
+        while (noOneVisitedAntarctica && peopleIterator.hasNext()) {
+            Person person = peopleIterator.next();
+            if (person.hasVisited(Country.ANTARCTICA)) {
+                noOneVisitedAntarctica = false;
+            }
+        }
+
+        // assert
+        assertThat(noOneVisitedAntarctica).isTrue();
+    }
+
+    @Test
+    public void _2_3_check_that_nobody_visited_antarctica() {
+        // act
+        boolean noOneVisitedAntarctica = people.stream()
+                .noneMatch(person -> person.hasVisited(Country.ANTARCTICA));
+
+        // assert
+        assertThat(noOneVisitedAntarctica).isTrue();
+    }
+
+
+    /**
+     * EXAMPLE 3: Find the sum of all visited countries by people over 33
+     */
+
+    @Test
+    public void _3_1_sum_of_all_visited_countries_without_stream_api() {
         // act
         int allVisitedCountriesByPeopleOver33 = 0;
         for (Person person: people) {
@@ -76,7 +120,7 @@ public class StreamAPISandboxTest {
     }
 
     @Test
-    public void sum_of_all_visited_countries() {
+    public void _3_2_sum_of_all_visited_countries() {
         // act
         int allVisitedCountriesByPeopleOver33 = people.stream()
                 .filter(person -> person.getAge() > 33)
@@ -89,11 +133,11 @@ public class StreamAPISandboxTest {
 
 
     /**
-     * EXAMPLE 3: Find average age of people who have visited SPAIN
+     * EXAMPLE 4: Find average age of people who have visited SPAIN
      */
     
     @Test
-    public void compute_average_age_of_people_visiting_spain_without_stream_api() {
+    public void _4_1_compute_average_age_of_people_visiting_spain_without_stream_api() {
         // act
         List<Person> spainVisitors = new ArrayList<>();
         for (Person person: people) {
@@ -114,7 +158,7 @@ public class StreamAPISandboxTest {
     }
 
     @Test
-    public void compute_average_age_of_people_visiting_spain() {
+    public void _4_2_compute_average_age_of_people_visiting_spain() {
         // act
         double averageAgeOfSpainVisitors = people.stream()
                 .filter(person -> person.hasVisited(Country.SPAIN))
@@ -123,6 +167,5 @@ public class StreamAPISandboxTest {
         // assert
         assertThat(averageAgeOfSpainVisitors).isEqualTo(32.6); // AVG(26, 33, 22, 54, 28) = 32.6
     }
-
-    
+         
 }

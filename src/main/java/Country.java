@@ -11,5 +11,6 @@ public enum Country {
     CANADA,
     COSTA_RICA,
     CUBA,
-    PERU
+    PERU,
+    ANTARCTICA
 }
