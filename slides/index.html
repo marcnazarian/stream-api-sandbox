@@ -1,0 +1,169 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Introduction à l'API Stream de Java</title>
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/black.css">
+
+    <link rel="stylesheet" href="css/stream-api.css">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+
+    <!-- Printing and PDF exports -->
+    <script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+
+    </script>
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <h2 class="normal">Marc Nazarian</h2>
+            <p class="twitter">@MarcNazarian</p>
+            <img src="images/nuage-de-mots-marc-1.jpg"/>
+        </section>
+        <section>
+            <h3 class="normal">Java</h3>
+            <ul>
+                <li>1996 → Java 1</li>
+                <li>1998 → Java 2</li>
+                <li></li>
+                <li>2004 → Java 5</li>
+                <li></li>
+                <li>2014 → Java 8</li>
+                <li>2017 → Java 9</li>
+                <li>2018 → Java 10</li>
+            </ul>
+        </section>
+        <section>
+            <h3 class="normal">Le problème ?</h3>
+            <ul>
+                <li>Parcourir une collection :</li>
+                <ul>
+                    <li>À la recherche du 1° élement qui…</li>
+                    <li>À la recherche de tous les élements qui…</li>
+                    <li>Pour modifier les élements</li>
+                    <li>Pour calculer qq chose sur les éléments</li>
+                    <li>Pour calculer qq chose sur une propriété des éléments</li>
+                    <li>…</li>
+                    <li>Une combinaison de tout ça !</li>
+                </ul>
+            </ul>
+        </section>
+        <section>
+            <h3 class="normal">Les solutions</h3>
+            <ol>
+                <li>La manière classique (comme j'ai appris à l'école)</li>
+                <li>Utilisation d'une librairie (Google Guava, Apache Commons Collections)</li>
+                <li>L'API Stream (depuis Java 8)</li>
+            </ol>
+        </section>
+        <section>
+            <h2 class="normal">Exemple 1 : calcul de min et max</h2>
+            <pre><code class="java bigger">@Test
+public void min_max_of_a_number_collection_without_stream() {
+    List&lt;Integer&gt; numbers = Arrays.asList(12, 42, 55, 3, 121, 666, 202);
+    Integer min = Integer.MAX_VALUE;
+    Integer max = Integer.MIN_VALUE;
+    for (Integer number: numbers) {
+        if (number < min) {
+            min = number;
+        }
+        if (number > max) {
+            max = number;
+        }
+    }
+
+    assertThat(min).isEqualTo(3);
+    assertThat(max).isEqualTo(666)
+}</code></pre>
+        </section>
+        <section>
+            <h2 class="normal">min et max avec les streams</h2>
+            <pre><code class="java bigger">@Test
+public void min_max_of_a_number_collection() {
+    List&lt;Integer&gt; numbers = Arrays.asList(12, 42, 55, 3, 121, 666, 202);
+    Integer min = numbers.stream().min(Integer::compareTo).get();
+    Integer max = numbers.stream().max(Integer::compareTo).get();
+
+    assertThat(min).isEqualTo(3);
+    assertThat(max).isEqualTo(666);
+}</code></pre>
+        </section>
+        <section>
+            <h3 class="normal">Exemple 2 : trouver les entiers pairs</h3>
+            <pre><code class="java bigger">@Test
+public void find_all_even_numbers_without_stream_api() {
+    List&lt;Integer&gt; numbers = Arrays.asList(12, 42, 55, 3, 121, 666, 202);
+
+    List&lt;Integer&gt; evenNumbers = new ArrayList<>();
+    for (Integer number: numbers) {
+        if (number % 2 == 0) {
+            evenNumbers.add(number);
+        }
+    }
+
+    assertThat(evenNumbers).isEqualTo(Arrays.asList(12, 42, 666, 202));
+}</code></pre>
+        </section>
+        <section>
+            <h3 class="normal">Trouver les entiers pairs avec les streams</h3>
+            <pre><code class="java bigger">@Test
+public void find_all_even_numbers() {
+    List&lt;Integer&gt; numbers = Arrays.asList(12, 42, 55, 3, 121, 666, 202);
+
+    List&lt;Integer&gt; evenNumbers = numbers.stream()
+                    .filter(number -> number % 2 == 0)
+                    .collect(Collectors.toList());
+
+    assertThat(evenNumbers).isEqualTo(Arrays.asList(12, 42, 666, 202));
+}</code></pre>
+        </section>
+
+
+
+        <section>
+            <h3 class="normal">API Stream : les avantages</h3>
+            <ul>
+                <li>Vous ne codez pas l’algo</li>
+                <li>Traitement de gros volumes de données</li>
+                <li>Possibilité de paralléliser (avec précaution)</li>
+                <li>Lisible / Élégant ?</li>
+            </ul>
+        </section>
+    </div>
+</div>
+
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.js"></script>
+
+<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			// - https://github.com/hakimel/reveal.js#dependencies
+			Reveal.initialize({
+				transition: 'convex',
+				history: true,
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+h2.normal, h3.normal {
+    text-transform: none;
+}
+
+.twitter:before {
+  content:url('../images/twitter-logo-50-50.png');
+  vertical-align: -20%;
+  margin-right: 20px;
+}
+
+.bigger {
+    max-height: 450px !important;
+    font-size: smaller !important;
+}
