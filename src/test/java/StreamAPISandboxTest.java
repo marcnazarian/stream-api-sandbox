@@ -30,7 +30,7 @@ public class StreamAPISandboxTest {
     
     @Test
     public void _1_1_filter_a_collection_without_stream_api() {
-        // act
+
         List<Person> cubaVisitors = new ArrayList<>();
         for (Person person: people) {
             if (person.hasVisited(Country.CUBA)) {
@@ -38,31 +38,27 @@ public class StreamAPISandboxTest {
             }
         }
 
-        // assert
-        List<Person> expectedCubaVisitors = Arrays.asList(franck, gina);
-        assertThat(cubaVisitors).isEqualTo(expectedCubaVisitors);
+        assertThat(cubaVisitors).isEqualTo(Arrays.asList(franck, gina));
     }
 
     @Test
     public void _1_2_filter_a_collection() {
-        // act
+
         List<Person> cubaVisitors = people.stream()
                 .filter(person -> person.hasVisited(Country.CUBA))
                 .collect(Collectors.toList());
 
-        // assert
-        List<Person> expectedCubaVisitors = Arrays.asList(franck, gina);
-        assertThat(cubaVisitors).isEqualTo(expectedCubaVisitors);
+        assertThat(cubaVisitors).isEqualTo(Arrays.asList(franck, gina));
     }
 
 
     /**
-     * EXAMPLE 2: Check that nobody visited Antartica
+     * EXAMPLE 2: Check that nobody visited Antarctica
      */
 
     @Test
     public void _2_1_check_that_nobody_visited_antarctica_without_stream_api_with_for_loop() {
-        // act
+
         boolean noOneVisitedAntarctica = true;
         for (Person person: people) {
             if (person.hasVisited(Country.ANTARCTICA)) {
@@ -70,13 +66,12 @@ public class StreamAPISandboxTest {
             }
         }
 
-        // assert
         assertThat(noOneVisitedAntarctica).isTrue();
     }
 
     @Test
     public void _2_2_check_that_nobody_visited_antarctica_without_stream_api_with_while() {
-        // act
+
         boolean noOneVisitedAntarctica = true;
         Iterator<Person> peopleIterator = people.iterator();
         while (noOneVisitedAntarctica && peopleIterator.hasNext()) {
@@ -86,17 +81,15 @@ public class StreamAPISandboxTest {
             }
         }
 
-        // assert
         assertThat(noOneVisitedAntarctica).isTrue();
     }
 
     @Test
     public void _2_3_check_that_nobody_visited_antarctica() {
-        // act
+        
         boolean noOneVisitedAntarctica = people.stream()
                 .noneMatch(person -> person.hasVisited(Country.ANTARCTICA));
 
-        // assert
         assertThat(noOneVisitedAntarctica).isTrue();
     }
 
@@ -107,7 +100,7 @@ public class StreamAPISandboxTest {
 
     @Test
     public void _3_1_sum_of_all_visited_countries_without_stream_api() {
-        // act
+
         int allVisitedCountriesByPeopleOver33 = 0;
         for (Person person: people) {
             if (person.getAge() > 33) {
@@ -115,19 +108,17 @@ public class StreamAPISandboxTest {
             }
         }
 
-        // assert
         assertThat(allVisitedCountriesByPeopleOver33).isEqualTo(22);
     }
 
     @Test
     public void _3_2_sum_of_all_visited_countries() {
-        // act
+
         int allVisitedCountriesByPeopleOver33 = people.stream()
                 .filter(person -> person.getAge() > 33)
                 .map(Person::getNumberOfVisitedCountries)
                 .reduce(0, Integer::sum);
 
-        // assert
         assertThat(allVisitedCountriesByPeopleOver33).isEqualTo(22);
     }
 
@@ -138,7 +129,8 @@ public class StreamAPISandboxTest {
     
     @Test
     public void _4_1_compute_average_age_of_people_visiting_spain_without_stream_api() {
-        // act
+
+        // build a list of people who visited spain
         List<Person> spainVisitors = new ArrayList<>();
         for (Person person: people) {
             if (person.hasVisited(Country.SPAIN)) {
@@ -146,11 +138,13 @@ public class StreamAPISandboxTest {
             }
         }
 
+        // compute sum of people who visited spain
         int sumAgeOfSpainVisitors = 0;
         for (Person spainVisitor: spainVisitors)  {
             sumAgeOfSpainVisitors += spainVisitor.getAge();
         }
-        
+
+        // compute the average age of people who visited spain
         double averageAgeOfSpainVisitors = (double) sumAgeOfSpainVisitors / spainVisitors.size();
 
         // assert
@@ -159,13 +153,51 @@ public class StreamAPISandboxTest {
 
     @Test
     public void _4_2_compute_average_age_of_people_visiting_spain() {
-        // act
+
         double averageAgeOfSpainVisitors = people.stream()
                 .filter(person -> person.hasVisited(Country.SPAIN))
                 .collect(Collectors.averagingDouble(Person::getAge));
 
-        // assert
         assertThat(averageAgeOfSpainVisitors).isEqualTo(32.6); // AVG(26, 33, 22, 54, 28) = 32.6
     }
-         
+
+
+    
+//    /**
+//     * EXAMPLE 5: Find most popular countries
+//     */
+//
+//    @Test
+//    public void _5_1_find_countries_with_most_visitors_without_stream_api() {
+//        // act
+//        // init map
+//        Map<Country, Integer> mostPopularCountries = new HashMap<>();
+//        for (Person person : people) {
+//            for (Country country : Country.values()) {
+//                if (person.hasVisited(country)) {
+//                    mostPopularCountries.put(country, mostPopularCountries.getOrDefault(country, 0) + 1);
+//                }
+//            }
+//        }
+//
+//        // get most popular country
+//        Country mostPopularCountry = null;
+//        int numberOfVisitsOfMostPopularCountries = 0;
+//        for (Country country : mostPopularCountries.keySet()) {
+//            if (mostPopularCountries.get(country) > numberOfVisitsOfMostPopularCountries) {
+//                mostPopularCountry = country;
+//                numberOfVisitsOfMostPopularCountries = mostPopularCountries.get(country);
+//            }
+//        }
+//
+//        // assert
+//        assertThat(mostPopularCountry).isEqualTo(Country.FRANCE);
+//        assertThat(numberOfVisitsOfMostPopularCountries).isEqualTo(6);
+//    }
+//
+//    @Test
+//    public void _5_2_find_countries_with_most_visitors() {
+//        
+//    }
+    
 }
