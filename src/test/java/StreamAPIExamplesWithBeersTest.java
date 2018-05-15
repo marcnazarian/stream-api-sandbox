@@ -10,7 +10,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class StreamAPIExampleWithBeersTest {
+public class StreamAPIExamplesWithBeersTest {
 
     private User alice = new User("Alice", 26, Arrays.asList(Beer.SAISON_DUPONT_BIO, Beer.CHIMAY_DOREE, Beer.PUNK_IPA));
     private User bob = new User("Bob", 42, emptyList());
