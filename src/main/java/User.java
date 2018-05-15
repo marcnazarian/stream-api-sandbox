@@ -28,4 +28,10 @@ public class User {
         return favouriteBeers.size();
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "name='" + name + '\'' +
+                '}';
+    }
 }

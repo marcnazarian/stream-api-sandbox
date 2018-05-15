@@ -1,9 +1,6 @@
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
@@ -22,7 +19,7 @@ public class StreamAPIExamplesWithBeersTest {
     private User hans = new User("Hans", 17, emptyList());
     private User irina = new User("Irina", 21, singletonList(Beer.KERNEL_IPA));
     private User jan = new User("Jan", 41, Arrays.asList(Beer.ST_BERNARDUS, Beer.MANDRIN_CHARTREUSE));
-    private User karen = new User("Karen", 77, Arrays.asList(Beer.MANDRIN_CHARTREUSE, Beer.LONDON_PORTER, Beer.ST_BERNARDUS, Beer.BLANCHE_DE_BRUXELLES, Beer.TRIPLE_KARMELIET));
+    private User karen = new User("Karen", 77, Arrays.asList(Beer.MANDRIN_CHARTREUSE, Beer.LONDON_PORTER, Beer.BLANCHE_DE_BRUXELLES, Beer.TRIPLE_KARMELIET));
     private User luis = new User("Luis", 28, Arrays.asList(Beer.PUNK_IPA, Beer.PUNK_IPA, Beer.PUNK_IPA, Beer.PUNK_IPA));
 
     private List<User> users = Arrays.asList(alice, bob, charline, danny, elena, franck, gina, hans, irina, jan, karen, luis);
@@ -53,6 +50,34 @@ public class StreamAPIExamplesWithBeersTest {
                 .collect(Collectors.toList());
 
         assertThat(markusBruneFans).isEqualTo(Arrays.asList(franck, gina));
+    }
+
+    @Test
+    public void _1_3_filter_a_collection_multiple_filters_and_sort() {
+
+        List<User> topBeerFans = users.stream()
+                .filter(user -> user.getAge() >= 18)
+                .filter(user -> user.getName().toLowerCase().contains("a"))
+                .sorted(Comparator.comparing(User::getNumberOfFavouriteBeers).reversed())
+                .collect(Collectors.toList());
+
+        assertThat(topBeerFans).doesNotContain(bob); // no A in name and 0 beers
+        assertThat(topBeerFans).doesNotContain(hans); // under 18 and 0 beers
+        assertThat(topBeerFans).doesNotContain(luis); // no A in name
+        assertThat(topBeerFans).isEqualTo(Arrays.asList(gina, elena, karen, alice, charline, franck, jan, danny, irina));
+    }
+
+    @Test
+    public void _1_4_filter_a_collection_multiple_filters_and_sort_and_collect_in_map() {
+        Map<String, Integer> topBeerFansMap = users.stream()
+                .filter(user -> user.getAge() >= 18)
+                .filter(user -> user.getName().toLowerCase().contains("a"))
+                .sorted(Comparator.comparing(User::getNumberOfFavouriteBeers).reversed())
+                .collect(Collectors.toMap(User::getName, User::getNumberOfFavouriteBeers, (oldKey, newKey) -> oldKey, LinkedHashMap::new));
+
+        assertThat(topBeerFansMap.get("Gina")).isEqualTo(13);
+        assertThat(topBeerFansMap.get("Franck")).isEqualTo(2);
+        assertThat(topBeerFansMap.get("Irina")).isEqualTo(1);
     }
 
 
@@ -129,6 +154,19 @@ public class StreamAPIExamplesWithBeersTest {
         assertThat(emails.get(11)).isEqualTo("luis@unepetitemousse.fr");
     }
 
+    @Test
+    public void _3_3_apply_operation_on_all_elements_chain_map() {
+
+        List<String> emails = users.stream()
+                .map(user -> user.getName())
+                .map(username -> username.toLowerCase())
+                .map(username -> username.concat("@unepetitemousse.fr"))
+                .collect(Collectors.toList());
+
+        assertThat(emails.get(0)).isEqualTo("alice@unepetitemousse.fr");
+        assertThat(emails.size()).isEqualTo(12);
+        assertThat(emails.get(11)).isEqualTo("luis@unepetitemousse.fr");
+    }
 
     /**
      * EXAMPLE 4: Find average age of users who like PUNK_IPA

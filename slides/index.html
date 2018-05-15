@@ -89,7 +89,7 @@ private User jan = new User("Jan", 41, Arrays.asList(Beer.ST_BERNARDUS, Beer.MAN
 private User karen = new User("Karen", 77, Arrays.asList(Beer.MANDRIN_CHARTREUSE, Beer.LONDON_PORTER, Beer.ST_BERNARDUS, Beer.BLANCHE_DE_BRUXELLES, Beer.TRIPLE_KARMELIET));
 private User luis = new User("Luis", 28, Arrays.asList(Beer.PUNK_IPA, Beer.PUNK_IPA, Beer.PUNK_IPA, Beer.PUNK_IPA));
 
-private List<User> users = Arrays.asList(alice, bob, charline, danny, elena, franck, gina, hans, irina, jan, karen, luis);</code></pre>
+private List&lt;User&gt; users = Arrays.asList(alice, bob, charline, danny, elena, franck, gina, hans, irina, jan, karen, luis);</code></pre>
         </section>
 
         <section>
@@ -99,7 +99,7 @@ private List<User> users = Arrays.asList(alice, bob, charline, danny, elena, fra
             </section>
 
             <section>
-                <h2 class="normal">Exemple 1 : trouver les users qui aiment la Markus Brune</h2>
+                <h2 class="normal">Exemple 1 : trouver les users qui aiment la "Markus Brune"</h2>
                 <pre><code class="java bigger">@Test
 public void filter_a_collection_without_stream_api() {
     List&lt;User&gt; markusBruneFans = new ArrayList<>();
@@ -114,7 +114,7 @@ public void filter_a_collection_without_stream_api() {
             </section>
 
             <section>
-                <h2 class="normal">Filtrer avec les streams</h2>
+                <h2 class="normal">Avec les streams : filter</h2>
                 <pre><code class="java bigger">@Test
 public void filter_a_collection() {
     List&lt;User&gt; markusBruneFans = users.stream()
@@ -122,6 +122,23 @@ public void filter_a_collection() {
                 .collect(Collectors.toList());
 
     assertThat(markusBruneFans).isEqualTo(Arrays.asList(franck, gina));
+}</code></pre>
+            </section>
+
+            <section>
+                <h2 class="normal">Chainer les filtres</h2>
+                <pre><code class="java bigger">@Test
+public void filter_a_collection_multiple_filters_and_sort() {
+    List&lt;User&gt; topBeerFans = users.stream()
+        .filter(user -> user.getAge() >= 18)
+        .filter(user -> user.getName().toLowerCase().contains("a"))
+        .sorted(Comparator.comparing(User::getNumberOfFavouriteBeers).reversed())
+        .collect(Collectors.toList());
+
+    assertThat(topBeerFans).doesNotContain(bob); // no A in name and 0 beers
+    assertThat(topBeerFans).doesNotContain(hans); // under 18 and 0 beers
+    assertThat(topBeerFans).doesNotContain(luis); // no A in name
+    assertThat(topBeerFans).isEqualTo(Arrays.asList(gina, elena, karen, alice, charline, franck, jan, danny, irina));
 }</code></pre>
             </section>
 
@@ -135,23 +152,61 @@ public void filter_a_collection() {
             </section>
 
             <section>
-                <h2 class="normal">Exemple x : </h2>
-                <pre><code class="java bigger">
-                    
-</code></pre>
+                <h2 class="normal">Exemple 2 : Construire les adresses mail des users</h2>
+                <pre><code class="java bigger">@Test
+public void apply_operation_on_all_elements_without_stream_api() {
+    List&lt;String&gt; emails = new ArrayList<>();
+    for (User user: users) {
+        String email = user.getName().toLowerCase() + "@unepetitemousse.fr";
+        emails.add(email);
+    }
+
+    assertThat(emails.get(0)).isEqualTo("alice@unepetitemousse.fr");
+    assertThat(emails.size()).isEqualTo(12);
+    assertThat(emails.get(11)).isEqualTo("luis@unepetitemousse.fr");
+}</code></pre>
             </section>
 
             <section>
-                <h2 class="normal">Map avec les streams</h2>
-                <pre><code class="java bigger">
+                <h2 class="normal">Avec les streams : map</h2>
+                <pre><code class="java bigger">@Test
+public void apply_operation_on_all_elements() {
+    List&lt;String&gt; emails = users.stream()
+        .map(user -> user.getName().toLowerCase() + "@unepetitemousse.fr")
+        .collect(Collectors.toList());
 
-</code></pre>
+    assertThat(emails.get(0)).isEqualTo("alice@unepetitemousse.fr");
+    assertThat(emails.size()).isEqualTo(12);
+    assertThat(emails.get(11)).isEqualTo("luis@unepetitemousse.fr");
+}</code></pre>
+            </section>
+
+            <section>
+                <h2 class="normal">Chainer les map</h2>
+                <pre><code class="java bigger">@Test
+public void apply_operation_on_all_elements() {
+    List&lt;String&gt; emails = users.stream()
+        .map(user -> user.getName().toLowerCase() + "@unepetitemousse.fr")
+        .collect(Collectors.toList());
+
+    assertThat(emails.get(0)).isEqualTo("alice@unepetitemousse.fr");
+    assertThat(emails.size()).isEqualTo(12);
+    assertThat(emails.get(11)).isEqualTo("luis@unepetitemousse.fr");
+}</code></pre>
             </section>
 
         </section>
 
+        <section>
+            <h3>Les streams</h3>
+            <img src="images/java-streams.png" />
+        </section>
 
-        
+
+        <section>
+            <h3 class="normal">Les opérations de terminaison</h3>
+
+        </section>
 
 
         <section>
@@ -166,8 +221,8 @@ public void filter_a_collection() {
 
         <section>
             <h2 class="normal">Questions ?</h2>
-            <img src="images/questions.jpg"/>
-            <a href="https://github.com/marcnazarian/stream-api-sandbox">github.com/marcnazarian/stream-api-sandbox<a>
+            <img src="images/questions.jpg" />
+            <a href="https://github.com/marcnazarian/stream-api-sandbox">github.com/marcnazarian/stream-api-sandbox</a>
         </section>
 
     </div>
