@@ -28,11 +28,13 @@
 <body>
 <div class="reveal">
     <div class="slides">
+
         <section>
             <h3 class="normal">Introduction à l'API Stream de Java</h3>
             <p class="twitter">@MarcNazarian</p>
             <img src="images/nuage-de-mots-marc-1.jpg"/>
         </section>
+
         <section>
             <h3 class="normal">Java</h3>
             <ul>
@@ -46,6 +48,7 @@
                 <li>2018 → Java 10</li>
             </ul>
         </section>
+
         <section>
             <h3 class="normal">Le problème ?</h3>
             <ul>
@@ -61,6 +64,7 @@
                 </ul>
             </ul>
         </section>
+
         <section>
             <h3 class="normal">Les solutions</h3>
             <ol>
@@ -69,68 +73,85 @@
                 <li>L'API Stream (depuis Java 8)</li>
             </ol>
         </section>
-        <section>
-            <h2 class="normal">Exemple 1 : calcul de min et max</h2>
-            <pre><code class="java bigger">@Test
-public void min_max_of_a_number_collection_without_stream() {
-    List&lt;Integer&gt; numbers = Arrays.asList(12, 42, 55, 3, 121, 666, 202);
-    Integer min = Integer.MAX_VALUE;
-    Integer max = Integer.MIN_VALUE;
-    for (Integer number: numbers) {
-        if (number < min) {
-            min = number;
-        }
-        if (number > max) {
-            max = number;
-        }
-    }
 
-    assertThat(min).isEqualTo(3);
-    assertThat(max).isEqualTo(666)
-}</code></pre>
+        <section>
+            <h3 class="normal">Du code !</h3>
+            <pre><code class="java bigger">private User alice = new User("Alice", 26, Arrays.asList(Beer.SAISON_DUPONT_BIO, Beer.CHIMAY_DOREE, Beer.PUNK_IPA));
+private User bob = new User("Bob", 42, emptyList());
+private User charline = new User("Charline", 33, Arrays.asList(Beer.PUNK_IPA, Beer.MANDRIN_CHARTREUSE, Beer.KERNEL_IPA));
+private User danny = new User("Danny", 19, singletonList(Beer.MAREDSOUS));
+private User elena = new User("Elena", 22, Arrays.asList(Beer.PUNK_IPA, Beer.KERNEL_IPA, Beer.LONDON_PORTER, Beer.ST_BERNARDUS, Beer.MANDRIN_CHARTREUSE));
+private User franck = new User("Franck", 38, Arrays.asList(Beer.MANDRIN_CHARTREUSE, Beer.MARKUS_BRUNE));
+private User gina = new User("Gina", 54, Arrays.asList(Beer.MANDRIN_CHARTREUSE, Beer.LONDON_PORTER, Beer.KERNEL_IPA, Beer.PUNK_IPA, Beer.MAREDSOUS, Beer.CHIMAY_DOREE, Beer.SAISON_DUPONT_BIO, Beer.MARKUS_BRUNE, Beer.ST_BERNARDUS, Beer.DUVEL, Beer.BLANCHE_DE_BRUXELLES, Beer.MOINETTE, Beer.TRIPLE_KARMELIET));
+private User hans = new User("Hans", 17, emptyList());
+private User irina = new User("Irina", 21, singletonList(Beer.KERNEL_IPA));
+private User jan = new User("Jan", 41, Arrays.asList(Beer.ST_BERNARDUS, Beer.MANDRIN_CHARTREUSE));
+private User karen = new User("Karen", 77, Arrays.asList(Beer.MANDRIN_CHARTREUSE, Beer.LONDON_PORTER, Beer.ST_BERNARDUS, Beer.BLANCHE_DE_BRUXELLES, Beer.TRIPLE_KARMELIET));
+private User luis = new User("Luis", 28, Arrays.asList(Beer.PUNK_IPA, Beer.PUNK_IPA, Beer.PUNK_IPA, Beer.PUNK_IPA));
+
+private List<User> users = Arrays.asList(alice, bob, charline, danny, elena, franck, gina, hans, irina, jan, karen, luis);</code></pre>
         </section>
-        <section>
-            <h2 class="normal">min et max avec les streams</h2>
-            <pre><code class="java bigger">@Test
-public void min_max_of_a_number_collection() {
-    List&lt;Integer&gt; numbers = Arrays.asList(12, 42, 55, 3, 121, 666, 202);
-    Integer min = numbers.stream().min(Integer::compareTo).get();
-    Integer max = numbers.stream().max(Integer::compareTo).get();
 
-    assertThat(min).isEqualTo(3);
-    assertThat(max).isEqualTo(666);
-}</code></pre>
-        </section>
         <section>
-            <h3 class="normal">Exemple 2 : trouver les entiers pairs</h3>
-            <pre><code class="java bigger">@Test
-public void find_all_even_numbers_without_stream_api() {
-    List&lt;Integer&gt; numbers = Arrays.asList(12, 42, 55, 3, 121, 666, 202);
 
-    List&lt;Integer&gt; evenNumbers = new ArrayList<>();
-    for (Integer number: numbers) {
-        if (number % 2 == 0) {
-            evenNumbers.add(number);
+            <section>
+                <h1 class="normal">Filtrer une collection</h1>
+            </section>
+
+            <section>
+                <h2 class="normal">Exemple 1 : trouver les users qui aiment la Markus Brune</h2>
+                <pre><code class="java bigger">@Test
+public void filter_a_collection_without_stream_api() {
+    List&lt;User&gt; markusBruneFans = new ArrayList<>();
+    for (User user: users) {
+        if (user.doesLike(Beer.MARKUS_BRUNE)) {
+            markusBruneFans.add(user);
         }
     }
 
-    assertThat(evenNumbers).isEqualTo(Arrays.asList(12, 42, 666, 202));
+    assertThat(markusBruneFans).isEqualTo(Arrays.asList(franck, gina));
 }</code></pre>
+            </section>
+
+            <section>
+                <h2 class="normal">Filtrer avec les streams</h2>
+                <pre><code class="java bigger">@Test
+public void filter_a_collection() {
+    List&lt;User&gt; markusBruneFans = users.stream()
+                .filter(user -> user.doesLike(Beer.MARKUS_BRUNE))
+                .collect(Collectors.toList());
+
+    assertThat(markusBruneFans).isEqualTo(Arrays.asList(franck, gina));
+}</code></pre>
+            </section>
+
         </section>
+
+
         <section>
-            <h3 class="normal">Trouver les entiers pairs avec les streams</h3>
-            <pre><code class="java bigger">@Test
-public void find_all_even_numbers() {
-    List&lt;Integer&gt; numbers = Arrays.asList(12, 42, 55, 3, 121, 666, 202);
 
-    List&lt;Integer&gt; evenNumbers = numbers.stream()
-                    .filter(number -> number % 2 == 0)
-                    .collect(Collectors.toList());
+            <section>
+                <h1 class="normal">Appliquer des opérations sur les éléments d'une collection</h1>
+            </section>
 
-    assertThat(evenNumbers).isEqualTo(Arrays.asList(12, 42, 666, 202));
-}</code></pre>
+            <section>
+                <h2 class="normal">Exemple x : </h2>
+                <pre><code class="java bigger">
+                    
+</code></pre>
+            </section>
+
+            <section>
+                <h2 class="normal">Map avec les streams</h2>
+                <pre><code class="java bigger">
+
+</code></pre>
+            </section>
+
         </section>
 
+
+        
 
 
         <section>
