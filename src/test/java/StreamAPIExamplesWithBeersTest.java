@@ -153,20 +153,7 @@ public class StreamAPIExamplesWithBeersTest {
         assertThat(emails.size()).isEqualTo(12);
         assertThat(emails.get(11)).isEqualTo("luis@unepetitemousse.fr");
     }
-
-    @Test
-    public void _3_3_apply_operation_on_all_elements_chain_map() {
-
-        List<String> emails = users.stream()
-                .map(user -> user.getName())
-                .map(username -> username.toLowerCase())
-                .map(username -> username.concat("@unepetitemousse.fr"))
-                .collect(Collectors.toList());
-
-        assertThat(emails.get(0)).isEqualTo("alice@unepetitemousse.fr");
-        assertThat(emails.size()).isEqualTo(12);
-        assertThat(emails.get(11)).isEqualTo("luis@unepetitemousse.fr");
-    }
+    
 
     /**
      * EXAMPLE 4: Find average age of users who like PUNK_IPA

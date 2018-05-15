@@ -180,31 +180,97 @@ public void apply_operation_on_all_elements() {
     assertThat(emails.get(11)).isEqualTo("luis@unepetitemousse.fr");
 }</code></pre>
             </section>
-
-            <section>
-                <h2 class="normal">Chainer les map</h2>
-                <pre><code class="java bigger">@Test
-public void apply_operation_on_all_elements() {
-    List&lt;String&gt; emails = users.stream()
-        .map(user -> user.getName().toLowerCase() + "@unepetitemousse.fr")
-        .collect(Collectors.toList());
-
-    assertThat(emails.get(0)).isEqualTo("alice@unepetitemousse.fr");
-    assertThat(emails.size()).isEqualTo(12);
-    assertThat(emails.get(11)).isEqualTo("luis@unepetitemousse.fr");
-}</code></pre>
-            </section>
+            
 
         </section>
 
         <section>
-            <h3>Les streams</h3>
+            <h3 class="normal">Les streams</h3>
             <img src="images/java-streams.png" />
         </section>
 
 
         <section>
-            <h3 class="normal">Les opérations de terminaison</h3>
+
+            <section>
+                <h3 class="normal">Les opérations de terminaison</h3>
+                <ul>
+                    <li>count, min, max</li>
+                    <li>anyMatch, allMatch, noneMatch</li>
+                    <li>findFirst, findAny</li>
+                    <li>forEach</li>
+                    <li>reduce</li>
+                    <li>collect</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="normal">Exemple 3 : Vérifier que personne ne boit de la Kro :P</h2>
+                <pre><code class="java bigger">@Test
+public void check_that_nobody_liked_kro_without_stream_api_with_while() {
+    boolean noOneLikedKro = true;
+    Iterator&lt;User&gt; userIterator = users.iterator();
+    while (noOneLikedKro && userIterator.hasNext()) {
+        User user = userIterator.next();
+        if (user.doesLike(Beer.KRO)) {
+            noOneLikedKro = false;
+        }
+    }
+
+    assertThat(noOneLikedKro).isTrue();
+}</code></pre>
+            </section>
+
+            <section>
+                <h2 class="normal">Avec les streams : noneMatch</h2>
+                <pre><code class="java bigger">@Test
+public void check_that_nobody_liked_kro() {
+    boolean noOneLikedKro = users.stream()
+        .noneMatch(user -> user.doesLike(Beer.KRO));
+
+    assertThat(noOneLikedKro).isTrue();
+}</code></pre>
+            </section>
+
+            <section>
+                <h2 class="normal">Exemple 4 : La moyenne des gens qui aiment la Punk IPA</h2>
+                <pre><code class="java bigger">@Test
+public void compute_average_age_of_people_who_like_punk_ipa_without_stream_api() {
+    // build a list of users who liked Punk IPA
+    List&lt;User&gt; punkIpaFans = new ArrayList<>();
+    for (User user: users) {
+        if (user.doesLike(Beer.PUNK_IPA)) {
+            punkIpaFans.add(user);
+        }
+    }
+
+    // compute sum of users who liked Punk IPA
+    int sumAgeOfPunkIpaFans = 0;
+    for (User punkIpaFan: punkIpaFans)  {
+        sumAgeOfPunkIpaFans += punkIpaFan.getAge();
+    }
+
+    // compute the average age of users who liked Punk IPA
+    double averageAgeOfPunkIpaFans = (double) sumAgeOfPunkIpaFans / punkIpaFans.size();
+
+    // assert
+    assertThat(averageAgeOfPunkIpaFans).isEqualTo(32.6); // AVG(26, 33, 22, 54, 28) = 32.6
+}</code></pre>
+            </section>
+
+            <section>
+                <h2 class="normal">Avec les streams : collect + averingDouble</h2>
+                <pre><code class="java bigger">@Test
+public void compute_average_age_of_people_who_like_punk_ipa() {
+
+    double averageAgeOfPunkIpaFans = users.stream()
+            .filter(user -> user.doesLike(Beer.PUNK_IPA))
+            .collect(Collectors.averagingDouble(User::getAge));
+
+    assertThat(averageAgeOfPunkIpaFans).isEqualTo(32.6); // AVG(26, 33, 22, 54, 28) = 32.6
+}</code></pre>
+            </section>
+
 
         </section>
 
